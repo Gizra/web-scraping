@@ -20,12 +20,13 @@
         "composer/installers": "^1.0.20",
         "cweagans/composer-patches": "^1.0",
         "drupal-composer/drupal-scaffold": "^2.0.1",
+        "drupal/config_installer": "^1.0",
         "drupal/console": "^1",
         "drupal/core": "^8.7",
-        "drupal/config_installer": "^1.0",
         "drupal/feeds": "^3.0@alpha",
         "drupal/feeds_ex": "^1.0@alpha",
         "drupal/feeds_tamper": "^2.0",
+        "drupal/migrate_source_csv": "^3.1",
         "drush/drush": "~9"
     },
     "conflict": {
