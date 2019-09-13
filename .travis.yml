@@ -1,0 +1,50 @@
+sudo: required
+language: php
+php:
+- 7.3
+addons:
+  hosts:
+    - web-scraping.local
+services:
+- docker
+
+stages:
+  - lint
+  - test
+
+before_install:
+  - export PATH="$HOME/.config/composer/vendor/bin:$HOME/.composer/vendor/bin:$HOME/vendor/bin:$TRAVIS_BUILD_DIR/vendor/bin:$PATH"
+
+jobs:
+  include:
+    - stage: Lint
+      name: "Drupal coding standard: phpcs"
+      script:
+        - "$TRAVIS_BUILD_DIR/ci-scripts/install_coder.sh"
+        - "export REVIEW_STANDARD=\"Drupal\" && $TRAVIS_BUILD_DIR/ci-scripts/test_coder.sh"
+    - stage: Lint
+      name: "Drupal coding best practices: phpcs"
+      script:
+        - "$TRAVIS_BUILD_DIR/ci-scripts/install_coder.sh"
+        - "export REVIEW_STANDARD=\"DrupalPractice\" && $TRAVIS_BUILD_DIR/ci-scripts/test_coder.sh"
+    - stage: Lint
+      name: "Shell coding standard: shellcheck"
+      script:
+        - "$TRAVIS_BUILD_DIR/ci-scripts/install_shell.sh"
+        - "$TRAVIS_BUILD_DIR/ci-scripts/test_shell.sh"
+    - stage: Test
+      name: "Drupal browser-based tests: WebdriverI/O"
+      env:
+        - TEST_WEBDRIVERIO=backend
+      script:
+      - "$TRAVIS_BUILD_DIR/ci-scripts/install_server.sh"
+      - "$TRAVIS_BUILD_DIR/ci-scripts/install_webdriverio.sh"
+      - "$TRAVIS_BUILD_DIR/ci-scripts/test_webdriverio.sh"
+
+cache:
+  bundler: true
+  apt: true
+  directories:
+    - "$HOME/.composer/cache"
+    - "$HOME/.drush/cache"
+    - "$TRAVIS_BUILD_DIR/wdio/node_modules"

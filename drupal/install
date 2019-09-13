@@ -1,0 +1,144 @@
+#!/bin/bash
+set -e
+
+################################################################################
+#
+# This script will setup a local copy of Drupal 8
+# based on the Installation Profile.
+#
+# Do not change the content of this file.
+#
+################################################################################
+START_TIME=$(date +%s)
+
+# Define the root of the GIT repository.
+cd "${0%/*}" || exit 1
+ROOT=$(pwd)
+cd "$ROOT" || exit 1
+
+# Load the colors.
+source "$ROOT/scripts/helper-colors.sh"
+
+# Load the helpers.
+source "$ROOT/scripts/helper-functions.sh"
+
+##
+# Function to explain the script arguments.
+##
+function arguments_usage {
+  USAGE=$(fill_string_spaces "Usage: $0 [options]" 61)
+  TITLE=$(fill_string_spaces "Install $PROFILE_TITLE" 61)
+  echo
+  echo -e  "${BGCYAN}                                                                 ${RESTORE}"
+  echo -e "${BGLCYAN}  $TITLE  ${RESTORE}"
+  if [ -z "$NATIVE_INSTALL" ]; then
+    echo -e  "${BGCYAN}  This will install the platform into a ddev-based container.    ${RESTORE}"
+  else
+    echo -e  "${BGCYAN}  This will install the platform into a local database.    ${RESTORE}"
+  fi
+  echo -e  "${BGCYAN}  If the platform is already installed, it will be removed and   ${RESTORE}"
+  echo -e  "${BGCYAN}  reinstalled.                                                   ${RESTORE}"
+  echo -e  "${BGCYAN}                                                                 ${RESTORE}"
+  echo -e  "${BGCYAN}  $USAGE  ${RESTORE}"
+  echo -e  "${BGCYAN}                                                                 ${RESTORE}"
+  echo -e  "${BGCYAN}  OPTIONS:                                                       ${RESTORE}"
+  echo -e  "${BGCYAN}    -h   Show this message.                                      ${RESTORE}"
+  echo -e  "${BGCYAN}    -l   Open a new tab in your default browser and login to     ${RESTORE}"
+  echo -e  "${BGCYAN}         your project as the Administrator.                      ${RESTORE}"
+  echo -e  "${BGCYAN}    -y   Answer automatically yes to the confirmation questions.  ${RESTORE}"
+  echo -e  "${BGCYAN}                                                                 ${RESTORE}"
+  echo
+}
+
+
+# Check and process arguments.
+# See http://rsalveti.wordpress.com/2007/04/03/bash-parsing-arguments-with-getopts/
+while getopts "hdly" OPTION
+do
+  case $OPTION in
+    h)
+      arguments_usage
+      exit 1
+      ;;
+    l)
+      AUTO_LOGIN=1
+      ;;
+    y)
+      UNATTENDED=1
+      ;;
+    ?)
+      arguments_usage
+      exit
+      ;;
+  esac
+done
+
+
+# Always ask confirmation before destroying the Database & Files!
+TITLE=$(fill_string_spaces "Install $PROFILE_TITLE" 61)
+INFO=$(fill_string_spaces "> This will install the $PROFILE_NAME profile." 61)
+echo
+echo -e  "${BGBLUE}                                                                 ${RESTORE}"
+echo -e "${BGLBLUE}  $TITLE  ${RESTORE}"
+echo -e  "${BGBLUE}                                                                 ${RESTORE}"
+echo -e  "${BGBLUE}  > This will delete the database, contrib code and files.       ${RESTORE}"
+echo -e  "${BGBLUE}  > This will recreate the environment                           ${RESTORE}"
+echo -e  "${BGBLUE}    (download Drupal + contrib modules & themes).                ${RESTORE}"
+echo -e  "${BGBLUE}  $INFO  ${RESTORE}"
+if [ $AUTO_LOGIN ]; then
+  echo -e  "${BGBLUE}  • A browser tab will open and log you in as Administrator.     ${RESTORE}"
+fi
+echo -e  "${BGBLUE}                                                                 ${RESTORE}"
+echo
+
+if [ ! $UNATTENDED ]; then
+  echo -e -n "${LRED}Are you sure?${RESTORE} (Y/n) "
+  read -e -n 1 -r
+  if [[ ! $REPLY =~ ^[Y|y]$ ]]; then
+    echo
+    echo -e  "${BGYELLOW}                                                                 ${RESTORE}"
+    echo -e "${BGLYELLOW}  Installation aborted!                                          ${RESTORE}"
+    echo -e  "${BGYELLOW}                                                                 ${RESTORE}"
+    echo
+    exit 0
+  fi
+  echo
+fi
+
+# Clean up composer-based code.
+delete_profile_contrib
+
+# Clean up old settings.
+delete_settings
+
+# Re-bootstrap source code.
+composer_install
+
+# Start ddev.
+start_ddev
+
+# settings.php customization.
+update_settings
+
+# Run post script (if any).
+(run_post_script "install") || true
+
+# If we managed to get to here: the installation was successful!
+BASE_DOMAIN_URL="$(get_base_url)"
+LINK_INFO=$(fill_string_spaces "> Visit the site : ${BGLGREEN}$BASE_DOMAIN_URL${BGGREEN}" 89)
+echo
+echo -e  "${BGGREEN}                                                                 ${RESTORE}"
+echo -e  "${BGGREEN}  $LINK_INFO  ${RESTORE}"
+echo -e  "${BGGREEN}                                                                 ${RESTORE}"
+echo
+
+
+# Auto Login?
+if [ $AUTO_LOGIN ]; then
+  drupal_login
+fi
+
+END_TIME=$(date +%s)
+EXEC_TIME=$((END_TIME-START_TIME))
+echo -e "${GREEN} The installation is done in ${EXEC_TIME} seconds${RESTORE}"
+exit 0
