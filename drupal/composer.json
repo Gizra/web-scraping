@@ -27,7 +27,7 @@
         "drupal/feeds_ex": "^1.0@alpha",
         "drupal/feeds_tamper": "^2.0",
         "drupal/migrate_file": "^1.1",
-        "drupal/migrate_source_csv": "^3.1",
+        "drupal/migrate_source_csv": "^2.2",
         "drupal/migrate_tools": "^4.3",
         "drush/drush": "~9"
     },
