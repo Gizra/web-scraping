@@ -1,0 +1,4 @@
+_id,_first_name,_last_name,_position,_email,_name,_pass,_role
+1,Joe,Doe,Director,joe,joe@example.com,joe,1234,
+2,Content,Collaborator,Collaborator,content_collaborator@example.com,Content Collaborator,1234,content_collaborator
+3,Content,Editor,Editor,content_editor@example.com,Content Editor,1234,content_editor
