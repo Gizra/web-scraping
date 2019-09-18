@@ -4,6 +4,7 @@ namespace Drupal\server_job_scrape\Plugin\UnJobScraper;
 
 use Drupal\server_job_scrape\ServerJobXmlWriter;
 use Drupal\server_job_scrape\ServerJobScraperBase;
+use Goutte\Client;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -24,7 +25,16 @@ class Gizra extends ServerJobScraperBase {
    * {@inheritdoc}
    */
   public function processItem($url) {
+    $client = new Client();
+    $client->request('get', $url);
+    $result_xml = new \SimpleXMLElement('<jobs></jobs>');
+    foreach ($client->getCrawler()->evaluate('//li/a') as $result) {
+      $job = $result_xml->addChild('job');
+      $job->title = $result->textContent;
+      $job->url = $result->attr('href');
+    }
 
+    return $result_xml;
   }
 
   /**
