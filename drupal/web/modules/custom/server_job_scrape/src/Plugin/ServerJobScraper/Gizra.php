@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\server_job_scrape\Plugin\UnJobScraper;
+namespace Drupal\server_job_scrape\Plugin\ServerJobScraper;
 
 use Drupal\server_job_scrape\ServerJobXmlWriter;
 use Drupal\server_job_scrape\ServerJobScraperBase;
@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Scrapes jobs from gizra.com.
  *
- * @UnJobScraper(
+ * @ServerJobScraper(
  *   id = "gizra",
  *   title = @Translation("Gizra.com site"),
  * )
@@ -34,7 +34,7 @@ class Gizra extends ServerJobScraperBase {
       $job->url = $result->attr('href');
     }
 
-    return $result_xml;
+    $this->saveXml($result_xml);
   }
 
   /**
