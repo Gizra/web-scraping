@@ -1,0 +1,4 @@
+services:
+  plugin.manager.server_job_scraper:
+    class: \Drupal\server_job_scrape\Plugin\ScrapePluginManager
+    parent: default_plugin_manager

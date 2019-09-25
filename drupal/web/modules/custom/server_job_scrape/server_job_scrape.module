@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * @file
+ * SERVER Job Scrape module.
+ */
+
+use Drupal\Core\Language\Language;
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_cron().
+ */
+function server_job_scrape_cron() {
+  $val = \Drupal::state()->get('server_job_scrape.last');
+  if (time() - $val < 3600 * 24) {
+    return;
+  }
+
+  $urls = [
+    'https://www.gizra.com/jobs/',
+  ];
+
+  $queue = \Drupal::queue('server_job_scrape_feeds');
+  foreach ($urls as $url) {
+    $queue->createItem($url);
+  }
+
+  \Drupal::state()->set('server_job_scrape.last', time());
+}
+
+/**
+ * Implements hook_node_presave().
+ */
+function server_job_scrape_node_presave(EntityInterface $entity) {
+  $bundle = $entity->bundle();
+  $type = $entity->getEntityTypeId();
+  if ($type != 'node' || $bundle != 'job') {
+    return;
+  }
+
+  if ($entity->feeds_item->isEmpty()) {
+    return;
+  }
+
+  // Let feeds-based jobs have all undefined language, we do not know, but
+  // we should display them regardless of the user-interface language.
+  $entity->set('langcode', Language::LANGCODE_NOT_SPECIFIED);
+}
