@@ -31,7 +31,7 @@ class Gizra extends ServerJobScraperBase {
     foreach ($client->getCrawler()->evaluate('//li/a') as $result) {
       $job = $result_xml->addChild('job');
       $job->title = $result->textContent;
-      $job->url = $result->attr('href');
+      $job->url = self::BASE_URL . $result->getAttribute('href');
     }
 
     $this->saveXml($result_xml);
