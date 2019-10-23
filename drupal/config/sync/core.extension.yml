@@ -1,5 +1,9 @@
 module:
+  action: 0
+  block: 0
   breakpoint: 0
+  config: 0
+  contextual: 0
   dblog: 0
   feeds: 0
   feeds_ex: 0

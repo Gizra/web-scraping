@@ -4,8 +4,10 @@ status: true
 dependencies:
   config:
     - field.field.node.job.body
+    - field.field.node.job.field_url
     - node.type.job
   module:
+    - link
     - text
     - user
 id: node.job.default
@@ -19,6 +21,18 @@ content:
     weight: 101
     settings: {  }
     third_party_settings: {  }
+    region: content
+  field_url:
+    weight: 102
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
     region: content
   links:
     weight: 100

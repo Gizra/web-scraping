@@ -1,0 +1,68 @@
+uuid: 08b9e8e1-3994-4982-9b24-98f2d2a8700d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.job.field_url
+    - node.type.job
+  module:
+    - feeds_ex
+    - node
+label: Job
+id: job
+description: ''
+import_period: 3600
+fetcher: directory
+fetcher_configuration:
+  allowed_extensions: 'txt csv tsv xml opml'
+  allowed_schemes:
+    public: public
+  recursive_scan: false
+parser: html
+parser_configuration:
+  context:
+    value: //job
+  sources:
+    title:
+      label: title
+      value: title
+    url:
+      label: url
+      value: url
+  use_tidy: false
+  display_errors: false
+  source_encoding:
+    - auto
+  debug_mode: false
+  line_limit: 100
+processor: 'entity:node'
+processor_configuration:
+  update_existing: 0
+  update_non_existent: _keep
+  expire: -1
+  owner_feed_author: false
+  owner_id: 0
+  authorize: true
+  skip_hash_check: false
+  values:
+    type: job
+custom_sources:
+  title:
+    label: title
+    value: title
+    machine_name: title
+  url:
+    label: url
+    value: url
+    machine_name: url
+mappings:
+  -
+    target: title
+    map:
+      value: title
+    unique: {  }
+  -
+    target: field_url
+    map:
+      uri: url
+      title: url

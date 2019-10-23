@@ -4,8 +4,10 @@ status: true
 dependencies:
   config:
     - field.field.node.job.body
+    - field.field.node.job.field_url
     - node.type.job
   module:
+    - link
     - path
     - text
 id: node.job.default
@@ -28,6 +30,14 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_url:
+    weight: 122
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
   path:
     type: path
     weight: 30
