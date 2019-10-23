@@ -8,4 +8,5 @@ id: anonymous
 label: 'Anonymous user'
 weight: 0
 is_admin: false
-permissions: {  }
+permissions:
+  - 'access content'

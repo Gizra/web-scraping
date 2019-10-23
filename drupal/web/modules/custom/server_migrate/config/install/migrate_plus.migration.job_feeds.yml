@@ -1,0 +1,22 @@
+id: job_feed
+label: 'Job feed'
+migration_group: server
+migration_tags:
+  - job_feeds
+source:
+  plugin: csv
+  path: modules/custom/server_migrate/csv_files/job_feeds.csv
+  header_row_count: 1
+  keys:
+    - '_id'
+destination:
+  plugin: 'entity:feeds_feed'
+  default_bundle: job
+process:
+  title: _name
+  source: _url
+
+dependencies:
+  enforced:
+    module:
+      - server_migrate
