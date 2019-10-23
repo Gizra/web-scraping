@@ -5,8 +5,9 @@ google-chrome --version
 # Load helper functionality.
 source ci-scripts/helper_functions.sh
 
-sudo apt-get update -q
-sudo apt-get install dpkg -y -q
+# Install Google Chrome.
+sudo apt-get -qq update -q
+sudo apt-get -qq install dpkg -y -q
 wget -nv https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo dpkg -i google-chrome-stable_current_amd64.deb
 
@@ -18,4 +19,4 @@ nohup ./chromedriver &
 
 # Install WDIO.
 cd "$ROOT_DIR"/wdio || exit 1
-npm install
+npm install > ./_build.log 2>&1 || ( EC=$?; cat ./_build.log; exit $EC )
